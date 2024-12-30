@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Join Meeting{% endblock %}
+
+{% block content %}
+<div class="container">
+        <h1 class="text-center mt-5">Join Meeting</h1>
+        <form method="POST" action="{{ url_for('join') }}" class="mt-4">
+            <div class="form-group">
+                <input type="text" placeholder="Room ID:" class="form-control" id="roomID" name="roomID" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">Join</button>
+        </form>
+    </div>
+    <footer>
+        <p>&copy; <span id="currentYear"></span> El Wey. All rights reserved. <i class="fa fa-clock-o"></i> <span id="currentTime"></span></p>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        function updateTime() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            document.getElementById('currentTime').textContent = hours + ':' + minutes + ':' + seconds;
+        }
+
+        updateTime(); 
+        setInterval(updateTime, 1000);
+    </script>
+{% endblock %}

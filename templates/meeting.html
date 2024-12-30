@@ -1,0 +1,259 @@
+<html>
+
+<head>
+    <title> ClassRoom </title>
+    <link rel="stylesheet" href="{{url_for('static', filename = 'meeting.css')}}">
+    <style>
+        body {
+            background-color: black;
+        }
+
+        #root {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+    <style>
+        .transcript {
+            margin-left: 20%;
+            text-align: center;
+        }
+
+        .btn {
+            margin-top: 20px;
+        }
+
+        .start,
+        .stop {
+            border: 2px solid #007bff;
+            /* width: 6rem; */
+            border-radius: 5px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .copy {
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            margin-left: 10%;
+
+        }
+
+        .start:hover,
+        .stop:hover,
+        .copy:hover {
+            background-color: #0c0d0d;
+            color: #fff;
+            border-color: #0056b3;
+        }
+
+        #result {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+
+    <style>
+        .card {
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            padding: 20px;
+            width: 60%;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .transcript-title {
+            display: flex;
+            color: #444;
+            margin-left: 25%;
+            margin-bottom: 20px;
+        }
+
+        .transcript-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+
+        .transcript-button {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .transcript-button button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+
+        .transcript-button button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+    <style>
+        /* Footer styles */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            /* position: fixed; */
+            bottom: 0;
+            width: 100%;
+        }
+
+        .fa {
+            margin: 0 5px;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="nav">
+        <div class="back-to-dashboard">
+            <a href="{{url_for('dashboard')}}" style="text-decoration: none;">
+                Back to Dashboard &#x2197;
+            </a>
+        </div>
+        <div class="summary">
+            <a href="/summ_input" target="_blank">Summarise Here &#x2197;</a>
+        </div>
+
+    </div>
+    <div class="title">
+        <h2>Your ClassRoom</h2>
+    </div>
+    <div id="root"></div>
+    
+    <div class="card">
+        <h1 class="transcript-title">Transcript</h1>
+        <textarea id="result" class="transcript-textarea" rows="9" cols="69"></textarea> <br>
+        <div class="transcript-button">
+            <button id="start" class="start">Start</button>
+            <button id="stop" class="stop">Stop</button>
+            <button id="copy" class="copy">Copy To Clipboard</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="currentYear"></span> el_wey. All rights reserved. <i class="fa fa-clock-o"></i> <span
+                id="currentTime"></span></p>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        function updateTime() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            document.getElementById('currentTime').textContent = hours + ':' + minutes + ':' + seconds;
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+
+    <script type="text/javascript">
+        var startButton = document.getElementById('start');
+        var stopButton = document.getElementById('stop');
+        var copyButton = document.getElementById('copy');
+        var resultElement = document.getElementById('result');
+
+        var recognition = new webkitSpeechRecognition();
+
+        recognition.lang = window.navigator.language;
+        recognition.interimResults = true;
+
+        startButton.addEventListener('click', () => { recognition.start(); });
+
+        stopButton.addEventListener('click', () => { recognition.stop(); });
+        copyButton.addEventListener('click', () => {
+            resultElement.select();
+            document.execCommand('copy');
+        });
+
+        recognition.addEventListener('result', (event) => {
+            const result = event.results[event.results.length - 1][0].transcript;
+            resultElement.textContent = result;
+        });
+    </script>
+    </div>
+</body>
+<script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+<script>
+    window.onload = function () {
+        function getUrlParams(url) {
+            let urlStr = url.split('?')[1];
+            const urlSearchParams = new URLSearchParams(urlStr);
+            const result = Object.fromEntries(urlSearchParams.entries());
+            return result;
+        }
+
+
+        // Generate a Token by calling a method.
+        // @param 1: appID
+        // @param 2: serverSecret
+        // @param 3: Room ID
+        // @param 4: User ID
+        // @param 5: Username
+        const roomID = getUrlParams(window.location.href)['roomID'] || (Math.floor(Math.random() * 10000) + "");
+        const userID = Math.floor(Math.random() * 10000) + "";
+        // const userName = "userName" + userID;
+        const userName = "{{username}}";
+
+        const appID = 1001989752;
+        const serverSecret = "77d1f00671bf72d99b22e14c1b8a13eb";
+        const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
+
+
+        const zp = ZegoUIKitPrebuilt.create(kitToken);
+        zp.joinRoom({
+            container: document.querySelector("#root"),
+            sharedLinks: [{
+                name: 'Personal link',
+                url: window.location.protocol + '//' + window.location.host + window.location.pathname + '?roomID=' + roomID,
+            }],
+            scenario: {
+                mode: ZegoUIKitPrebuilt.VideoConference,
+            },
+
+            turnOnMicrophoneWhenJoining: true,
+            turnOnCameraWhenJoining: true,
+            showMyCameraToggleButton: true,
+            showMyMicrophoneToggleButton: true,
+            showAudioVideoSettingsButton: true,
+            showScreenSharingButton: true,
+            showTextChat: true,
+            showUserList: true,
+            maxUsers: 2,
+            layout: "Auto",
+            showLayoutButton: false,
+
+        });
+    }
+</script>
+
+</html>
+

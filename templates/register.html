@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="mb-md-5 mt-md-4 pb-5">
+    <form action="{{ url_for('register') }}" method="POST">
+    {{ form.csrf_token }}
+    {{ form.hidden_tag() }}
+
+
+    <h2 class="fw-bold mb-2 text-uppercase">Register</h2>
+    <p class="text-white-50 mb-5">Create an Account</p>
+
+    <div class="form-outline form-white mb-4">
+        {{ form.first_name.label }} {{ form.first_name(class="form-control form-control-lg", id="firstname") }}<br>
+        {{ form.last_name.label }} {{ form.last_name(class="form-control form-control-lg", id="lastname") }}<br>
+        {{ form.email.label }} {{ form.email(class="form-control form-control-lg", id="email") }}<br>
+        {{ form.username.label }} {{ form.username(class="form-control form-control-lg", id="username") }}<br>
+        {{ form.password.label }} {{ form.password(class="form-control form-control-lg", id="password") }}
+    </div>
+    <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>
+</form>
+</div>
+
+<div><p class="mb-0">Already have an account? <a href="{{ url_for('login') }}" class="text-white-50 fw-bold">Login</a></p> </div>
+<footer>
+    <p>&copy; <span id="currentYear"></span> el_wey. All rights reserved. <i class="fa fa-clock-o"></i> <span id="currentTime"></span></p>
+</footer>
+
+<script>
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    function updateTime() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        document.getElementById('currentTime').textContent = hours + ':' + minutes + ':' + seconds;
+    }
+
+    updateTime(); 
+    setInterval(updateTime, 1000);
+</script>
+{% endblock %}
+
